@@ -3,13 +3,11 @@ module Owly
   #
   # @see http://ow.ly/api-docs
   class Client
-    include ::WrappyAPI
 
-    attr_reader :config
-
-    def initialize(&block)
-      @config = Configuration.new
-      @config.configure(&block) if block_given?
+    # @param [String] token
+    # @param [String] secret
+    def initialize(token, secret)
+      @oauth_token, @oauth_secret = token, secret
     end
 
     # Uploads a file through the API
@@ -30,45 +28,66 @@ module Owly
       unless [File, IO].include?(file.class)
         raise "invalid file supplied. Must be a File or IO object"
       end
+      ext = File.extname(file)
       params = {}
       params["apiKey"] = ENV.fetch('OWLY_API_KEY')
       params['fileName'] = File.basename(file)
-      params['uploaded_file'] = file
-      result = post('photo/upload', params, {:content_type => :multipart})
-      if result
-        result['static_url'] = 'http://static.ow.ly/photos/normal/%s%s' % [result['hash'], File.extname(file)]
+      # @@todo fix image suffix
+      params['uploaded_file'] = Faraday::UploadIO.new(file.path, mime_type(ext))
+      response = connection.post do |req|
+        req.url '/api/1.1/photo/upload'
+        req.body = params
+        req.headers['Authorization'] = twitter_headers
+        req.headers['Content-Type'] = 'multipart/form-data'
       end
-      result
+      binding.pry
+      if response.success?
+        response.body['static_url'] = 'http://static.ow.ly/photos/normal/%s%s' % [response.body['hash'], ext]
+        response.body
+      else
+        false
+      end
+    end
+
+    # Return a mime-type for a small set of known file extensions
+    #
+    # @param [String] ext
+    def mime_type(ext)
+      case ext
+      when ".jpg" then "image/jpg"
+      when ".gif" then "image/gif"
+      when ".png" then "image/png"
+      when ".tif" then "image/tif"
+      end
     end
 
     protected
 
-    def default_handler
-      if response.content_type == 'application/json'
-        body = JSON.parse(response.body)
-        if body['error']
-          @errors << body['error']
-          false
-        else
-          body['results']
-        end
-      end
-    end
-
-    # Required to upload photos to ow.ly
+    # Generates headers required to authorize photo uloads to owly
     # 
     # @see http://ow.ly/api-docs
     # @param [Hash] params
-    def set_headers(params = {})
+    def twitter_headers(params = {})
       uri = 'https://api.twitter.com/1.1/account/verify_credentials.json'
       credentials = {}
       credentials[:consumer_key] = ENV.fetch('HOOTSUITE_TWITTER_API_KEY')
       credentials[:consumer_secret] = ENV.fetch('HOOTSUITE_TWITTER_API_SECRET')
-      credentials[:token] = '4893474636-2eqUyMHXkgc9gQajPmLOAyrp1WsDhd1yNbLGZtk'
-      credentials[:token_secret] = 'cLWIZOe9dDxcruJszUhVyCuNwPVQqqhfUWI954LXCAIIW'
-      auth = SimpleOAuth::Header.new('get', uri, {}, credentials)
-      @request['Authorization'] = auth.to_s
-      super
+      credentials[:token] = @oauth_token
+      credentials[:token_secret] = @oauth_secret
+      ::SimpleOAuth::Header.new('get', uri, {}, credentials).to_s
+    end
+
+    private
+
+    # Returns the Faraday HTTP connection
+    #
+    # @return [Faraday]
+    def connection
+      @connection = ::Faraday.new(:url => 'http://ow.ly') do |faraday|
+        faraday.request :multipart
+        faraday.adapter Faraday.default_adapter
+        faraday.response :json
+      end
     end
   end
 end
