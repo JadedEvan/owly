@@ -3,9 +3,13 @@ require 'uri'
 
 describe 'Owly spec', :type => :integration do
   before(:all) do
-    token = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN')
-    secret = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN_SECRET')
-    @client = Owly::Client.new(token, secret)
+    @client = Owly::Client.new do |c|
+      c.oauth_token = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN')
+      c.oauth_secret = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN_SECRET')
+      c.api_key = ENV.fetch('OWLY_API_KEY')
+      c.consumer_key = ENV.fetch('HOOTSUITE_TWITTER_API_KEY')
+      c.consumer_secret = ENV.fetch('HOOTSUITE_TWITTER_API_SECRET')
+    end
     path = File.dirname(File.expand_path(__FILE__))
     @file = File.open(File.join(path, '../files', 'placecage_400x250.jpg'), 'r')
   end

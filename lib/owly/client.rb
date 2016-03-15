@@ -1,13 +1,28 @@
 module Owly
-  # Client class used to interact with the ow.ly API. Requires an API token.
+  # Client class used to interact with the ow.ly API. Requires an ow.ly API token.
+  #
+  # @example create a new client
+  #  @client = Owly::Client.new do |c|
+  #    c.consumer_key = 'twitter-application-key'
+  #    c.consumer_secret = 'twitter-application-secret'
+  #    c.oauth_token = 'my-twitter-oauth-token'
+  #    c.oauth_secret = 'my-twitter-oauth-secret'
+  #    c.api_key = '123456789'
+  #  end
   #
   # @see http://ow.ly/api-docs
   class Client
 
-    # @param [String] token
-    # @param [String] secret
-    def initialize(token, secret)
-      @oauth_token, @oauth_secret = token, secret
+    attr_accessor :oauth_token, :oauth_secret, :api_key, :consumer_key, :consumer_secret
+
+    # Creates a new client. The OAuth token and secret are valid Twitter OAuth
+    # credentials that are used to verify the Twitter account before using the
+    # ow.ly API. See the [ow.ly docs](http://ow.ly/api-docs) for more
+    # information
+    #
+    # @param [Proc] block
+    def initialize(&block)
+      yield self if block_given?
     end
 
     # Uploads a file through the API
@@ -24,6 +39,8 @@ module Owly
     # @param [File, IO] 
     # @return [Hash] if upload successful
     # @return [false] if upload failed
+    # @raise [Exception]
+    # @raise [KeyError] if +ENV['OWLY_API_KEY']+ is not available
     def upload_photo(file)
       unless [File, IO].include?(file.class)
         raise "invalid file supplied. Must be a File or IO object"
@@ -69,10 +86,10 @@ module Owly
     def twitter_headers(params = {})
       uri = 'https://api.twitter.com/1.1/account/verify_credentials.json'
       credentials = {}
-      credentials[:consumer_key] = ENV.fetch('HOOTSUITE_TWITTER_API_KEY')
-      credentials[:consumer_secret] = ENV.fetch('HOOTSUITE_TWITTER_API_SECRET')
-      credentials[:token] = @oauth_token
-      credentials[:token_secret] = @oauth_secret
+      credentials[:consumer_key] = consumer_key
+      credentials[:consumer_secret] = consumer_secret
+      credentials[:token] = oauth_token
+      credentials[:token_secret] = oauth_secret
       ::SimpleOAuth::Header.new('get', uri, {}, credentials).to_s
     end
 
