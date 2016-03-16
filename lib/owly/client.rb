@@ -42,7 +42,7 @@ module Owly
     # @raise [Exception]
     # @raise [KeyError] if +ENV['OWLY_API_KEY']+ is not available
     def upload_photo(file)
-      unless [File, IO].include?(file.class)
+      unless [File, IO, Tempfile].include?(file.class)
         raise "invalid file supplied. Must be a File or IO object"
       end
       ext = File.extname(file)
