@@ -4,10 +4,6 @@ Ruby implementation around the [ow.ly API](http://ow.ly/api-docs). Leverages [Fa
 
 This implementation currently only supports photo uploads.
 
-## Requirements
-
-Usage requires an Ow.ly API key. This key must be set as an environment variable +OWLY_API_KEY+.
-
 ## Usage
 
 To upload a photo ow.ly requires that you verify your identity through Twitter. As such, it will require a valid Twitter OAuth token and Twitter OAuth token secret to use. See the [ow.ly docs](http://ow.ly/api-docs) for more information.

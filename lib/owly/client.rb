@@ -1,3 +1,5 @@
+require 'uri'
+
 module Owly
   # Client class used to interact with the ow.ly API. Requires an ow.ly API token.
   #
@@ -15,10 +17,7 @@ module Owly
 
     attr_accessor :oauth_token, :oauth_secret, :api_key, :consumer_key, :consumer_secret
 
-    # Creates a new client. The OAuth token and secret are valid Twitter OAuth
-    # credentials that are used to verify the Twitter account before using the
-    # ow.ly API. See the [ow.ly docs](http://ow.ly/api-docs) for more
-    # information
+    # Create a new object and optionally initialize attributes using a block
     #
     # @param [Proc] block
     def initialize(&block)
@@ -37,17 +36,15 @@ module Owly
     #    "static_url"=>"http://static.ow.ly/photos/normal/hijnz.jpg"}
     #
     # @param [File, IO] 
-    # @return [Hash] if upload successful
-    # @return [false] if upload failed
-    # @raise [Exception]
-    # @raise [KeyError] if +ENV['OWLY_API_KEY']+ is not available
+    # @return [Hash]  if successful
+    # @raise [Owly::Error]
     def upload_photo(file)
       unless [File, IO, Tempfile].include?(file.class)
         raise "invalid file supplied. Must be a File or IO object"
       end
       ext = File.extname(file)
       params = {}
-      params["apiKey"] = ENV.fetch('OWLY_API_KEY')
+      params["apiKey"] = api_key
       params['fileName'] = File.basename(file)
       params['uploaded_file'] = Faraday::UploadIO.new(file.path, mime_type(ext))
       response = connection.post do |req|
@@ -61,7 +58,7 @@ module Owly
         result['static_url'] = 'http://static.ow.ly/photos/normal/%s%s' % [result['hash'], ext]
         result
       else
-        false
+        raise Owly::Error, response.body['error']
       end
     end
 
