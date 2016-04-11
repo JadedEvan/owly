@@ -4,8 +4,8 @@ require 'uri'
 describe 'Owly spec', :type => :integration do
   before(:all) do
     @client = Owly::Client.new do |c|
-      c.oauth_token = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN')
-      c.oauth_secret = ENV.fetch('OWLY_TWITTER_OAUTH_TOKEN_SECRET')
+      c.oauth_token = ENV.fetch('HOOTSUITE_TWITTER_OAUTH_TOKEN')
+      c.oauth_secret = ENV.fetch('HOOTSUITE_TWITTER_OAUTH_TOKEN_SECRET')
       c.api_key = ENV.fetch('OWLY_API_KEY')
       c.consumer_key = ENV.fetch('HOOTSUITE_TWITTER_API_KEY')
       c.consumer_secret = ENV.fetch('HOOTSUITE_TWITTER_API_SECRET')

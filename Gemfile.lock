@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    owly (0.1.0)
+    owly-owly (0.1.0)
       faraday
       faraday_middleware
       simple_oauth
@@ -53,7 +53,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
-  owly!
+  owly-owly!
   pry
   pry-nav
   rspec (~> 3.4)

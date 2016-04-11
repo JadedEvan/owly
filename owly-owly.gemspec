@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require_relative 'lib/owly/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "owly"
+  spec.name          = "owly-owly"
   spec.version       = Owly::VERSION
   spec.authors       = ["Evan Reeves"]
   spec.email         = ["web@evanreeves.com"]
   spec.description   = %q{Ruby library for the ow.ly REST API}
   spec.summary       = %q{Ruby library for the ow.ly REST API}
-  spec.homepage      = "https://www.github.com/opallabs/owly"
+  spec.homepage      = "https://www.github.com/opallabs/owly-owly"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
