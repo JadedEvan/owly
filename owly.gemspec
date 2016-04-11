@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Evan Reeves"]
   spec.email         = ["web@evanreeves.com"]
   spec.description   = %q{Ruby library for the ow.ly REST API}
-  spec.homepage      = "https://www.github.com/jadedevan/owly"
+  spec.summary       = %q{Ruby library for the ow.ly REST API}
+  spec.homepage      = "https://www.github.com/opallabs/owly"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
