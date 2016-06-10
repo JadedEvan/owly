@@ -33,7 +33,7 @@ module Owly
     #    "caption"=>"placecage_400x250.jpg",
     #    "url"=>"http://ow.ly/i/hijnz",
     #    "score"=>1,
-    #    "static_url"=>"http://static.ow.ly/photos/normal/hijnz.jpg"}
+    #    "static_url"=>"http://static.ow.ly/photos/original/hijnz.jpg"}
     #
     # @param [File, IO] 
     # @return [Hash]  if successful
@@ -55,7 +55,7 @@ module Owly
       end
       if response.success?
         result = response.body['results']
-        result['static_url'] = 'http://static.ow.ly/photos/normal/%s%s' % [result['hash'], ext]
+        result['static_url'] = 'http://static.ow.ly/photos/original/%s%s' % [result['hash'], ext]
         result
       else
         raise Owly::Error, response.body['error']
