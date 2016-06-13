@@ -25,7 +25,7 @@ Create a {Owly::Client} and upload a photo:
      "caption"=>"placecage_400x250.jpg",
      "url"=>"http://ow.ly/i/hijnz",
      "score"=>1,
-     "static_url"=>"http://static.ow.ly/photos/normal/hijnz.jpg"}
+     "static_url"=>"http://static.ow.ly/photos/original/hijnz.jpg"}
 
 ## Testing
 
